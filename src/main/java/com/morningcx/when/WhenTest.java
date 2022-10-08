@@ -1,5 +1,10 @@
 package com.morningcx.when;
 
+import com.morningcx.when.agent.GetBytecode;
+import com.sun.tools.attach.VirtualMachine;
+
+import java.lang.management.ManagementFactory;
+
 /**
  * WhenTest
  *
@@ -7,7 +12,28 @@ package com.morningcx.when;
  * @date 2022/10/6
  */
 public class WhenTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Throwable {
+
+        String agentJar = "D:\\personal\\when\\src\\main\\resources\\when-agent.jar";
+        VirtualMachine vm = null;
+        try {
+            vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+            vm.loadAgent(agentJar);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (vm != null) {
+                    vm.detach();
+                }
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        byte[] classFile = GetBytecode.getClassFile(When.class);
+
+
 //        if (print("a", false) || print("b", false) && print("c", false) || print("d", true)) {
 //            if (print("a", false) || print("b", false) && print("c", false) || print("d", true)) {
 //                System.out.println("111111111");
