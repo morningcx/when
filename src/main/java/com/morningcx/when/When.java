@@ -93,17 +93,11 @@ public class When<T> implements Predicate<T> {
             List<Predicate<T>> predicates = branch.getPredicates();
             Predicate<T> then = branch.getThen();
             if (predicates.isEmpty()) {
-                if (then != null) {
-                    return then.test(t);
-                }
-                return true;
+                return then == null || then.test(t);
             } else {
                 for (Predicate<T> predicate : predicates) {
                     if (predicate.test(t)) {
-                        if (then != null) {
-                            return then.test(t);
-                        }
-                        return true;
+                        return then == null || then.test(t);
                     }
                 }
             }

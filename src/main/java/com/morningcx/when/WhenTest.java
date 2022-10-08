@@ -1,9 +1,19 @@
 package com.morningcx.when;
 
-import com.morningcx.when.agent.GetBytecode;
-import com.sun.tools.attach.VirtualMachine;
+import javassist.ClassPool;
+import javassist.CtMethod;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Mnemonic;
 
-import java.lang.management.ManagementFactory;
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * WhenTest
@@ -14,24 +24,42 @@ import java.lang.management.ManagementFactory;
 public class WhenTest {
     public static void main(String[] args) throws Throwable {
 
-        String agentJar = "D:\\personal\\when\\src\\main\\resources\\when-agent.jar";
-        VirtualMachine vm = null;
-        try {
-            vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-            vm.loadAgent(agentJar);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (vm != null) {
-                    vm.detach();
-                }
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(WhenTest.class)));
 
-        byte[] classFile = GetBytecode.getClassFile(When.class);
+
+        int iii = 0;
+        int aaa = 0;
+
+        for (int i = 0; i < 10; i++) {
+
+
+            Condition<Role> rolePredicate2 = r1 -> {
+                System.out.println(iii);
+                return true;
+            };
+
+
+            Condition<Role> rolePredicate = r -> {
+                System.out.println(aaa);
+                return true;
+            };
+
+            Function<Role, Map> function = (r) -> {
+                rolePredicate.test(new Role());
+                return Collections.singletonMap("123123", iii);
+            };
+
+
+
+            printCode(lambda(rolePredicate));
+            printCode(lambda(rolePredicate2));
+            printCode(lambda(function));
+
+
+
+//            System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(WhenTest.class)));
+
+        }
 
 
 //        if (print("a", false) || print("b", false) && print("c", false) || print("d", true)) {
@@ -45,10 +73,6 @@ public class WhenTest {
         }
 
 
-
-
-
-
         System.out.println("=============================================");
 
         When<Role> then2 = when().and(t -> false).or(t -> false);
@@ -57,7 +81,6 @@ public class WhenTest {
 
 
         System.out.println("=============================================");
-
 
 
         When<Role> then = when()
@@ -92,6 +115,34 @@ public class WhenTest {
         return b;
     }
 
+
+    private static SerializedLambda lambda(Object lambda) throws Throwable {
+        Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+        method.setAccessible(true);
+        SerializedLambda serializedLambda = (SerializedLambda) method.invoke(lambda);
+
+        System.out.println(serializedLambda);
+//        System.out.println(JSON.toJSONString(serializedLambda));
+        return serializedLambda;
+
+    }
+
+
+    private static void printCode(SerializedLambda lambda) throws Throwable {
+        ClassPool classPool = ClassPool.getDefault();
+        CtMethod method = classPool.getMethod(lambda.getImplClass().replace("/", "."), lambda.getImplMethodName());
+        MethodInfo methodInfo = method.getMethodInfo();
+        CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+        CodeIterator ci = codeAttribute.iterator();
+
+        List<String> operations = new LinkedList<>();
+        while (ci.hasNext()) {
+            int index = ci.next();
+            int op = ci.byteAt(index);
+            operations.add(Mnemonic.OPCODE[op]);
+        }
+        System.out.println(operations);
+    }
 
     private static When<Role> when() {
         return new When<>();
