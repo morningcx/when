@@ -1,5 +1,10 @@
 package com.morningcx.when;
 
+import com.morningcx.when.agent.GetBytecode;
+import com.morningcx.when.decompile.CompileUtils;
+import com.morningcx.when.pojo.HasId;
+import com.morningcx.when.pojo.HasName;
+import com.morningcx.when.pojo.Role;
 import javassist.ClassPool;
 import javassist.CtMethod;
 import javassist.bytecode.CodeAttribute;
@@ -9,11 +14,8 @@ import javassist.bytecode.Mnemonic;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * WhenTest
@@ -22,42 +24,93 @@ import java.util.function.Function;
  * @date 2022/10/6
  */
 public class WhenTest {
+
+
+    public static <T extends HasName & HasId> void process(T obj) {
+        String name = obj.getName();
+        Integer id = obj.getId();
+    }
+
+
     public static void main(String[] args) throws Throwable {
+
+
+
+        when().on(Role::getClass)
+                .in("1", "2")
+                .then(r -> System.out.println("12"))
+                .in("3", "4")
+                .then(r -> System.out.println("34"))
+                .in("1", "2")
+                .then(r -> System.out.println("56"))
+                .in("7", "8")
+                .then(r -> System.out.println("78"))
+                .then(r -> System.out.println("default"));
+
+
+        when().on(Role::getClass)
+                .in("1", "2")
+                .and(r -> r.getName().equals("11"))
+                .then(r -> System.out.println("12"))
+
+                .and(r -> r.getName().equals("22"))
+                .and(when().and(r -> r.getName().equals("22")).or(r -> r.getName().equals("22")))
+                .then(r -> System.out.println("34"))
+
+                .or(r -> r.getName().equals("22"))
+                .then(r -> System.out.println("56"))
+
+
+                .in("7", "8")
+                .then(r -> System.out.println("78"))
+
+
+                .then(r -> System.out.println("default"));
+
 
 //        System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(WhenTest.class)));
 
 
-        int iii = 0;
-        int aaa = 0;
+        int iii = 129;
+        int aaa = 129;
 
         for (int i = 0; i < 10; i++) {
 
 
             Condition<Role> rolePredicate2 = r1 -> {
-                System.out.println(iii);
+                System.out.println();
                 return true;
             };
 
-
-            Condition<Role> rolePredicate = r -> {
-                System.out.println(aaa);
+            Condition<Role> rolePredicate3 = r1 -> {
+                System.out.println();
                 return true;
             };
 
-            Function<Role, Map> function = (r) -> {
-                rolePredicate.test(new Role());
-                return Collections.singletonMap("123123", iii);
-            };
+            SerializedLambda lambda = lambda(rolePredicate2);
+            SerializedLambda lambda2 = lambda(rolePredicate3);
+
+            boolean equals = rolePredicate2.equals(rolePredicate3);
+            System.out.println(equals);
+
+            System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(rolePredicate2.getClass())));
 
 
+//            Condition<Role> rolePredicate = r -> {
+//                System.out.println(aaa + iii);
+//                rolePredicate2.test(new Role());
+//                return true;
+//            };
 
-            printCode(lambda(rolePredicate));
-            printCode(lambda(rolePredicate2));
-            printCode(lambda(function));
 
-
-
-//            System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(WhenTest.class)));
+//            SerializedLambda lambda = lambda(rolePredicate);
+//            SerializedLambda lambda2 = lambda(rolePredicate2);
+//
+//
+//            System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(rolePredicate2.getClass())));
+//
+//
+//            System.out.println(CompileUtils.decompile(GetBytecode.getClassFile(rolePredicate.getClass())));
 
         }
 
@@ -95,8 +148,7 @@ public class WhenTest {
                         .or(r -> print("d", true))
                         .then(when()
                                 .or(r -> print("a", false))
-                                .or(r -> print("b", true))
-                                .and(r -> print("c", false))
+                                .or(r -> print("b", true)).and(r -> print("c", false))
                                 .or(r -> print("d", true))
                                 .then(r -> System.out.println("111111111"))));
         boolean test = then.test(new Role());

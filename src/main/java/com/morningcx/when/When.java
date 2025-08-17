@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -14,15 +15,27 @@ import java.util.function.Predicate;
  */
 public class When<T> implements Predicate<T> {
     private List<Branch> branches = new ArrayList<>();
+
+    private Function<? super T, ?> on;
+
     private int branchIndex = 0;
     private int predicateIndex = 0;
 
-
-    @SafeVarargs
-    public When(Predicate<? super T>... predicates) {
-        Arrays.stream(predicates).forEach(this::and);
+    public When() {
     }
 
+    public When(Function<? super T, ?> on) {
+        this.on = on;
+    }
+
+    public When<T> on(Function<? super T, ?> on) {
+        this.on = on;
+        return this;
+    }
+
+    public When<T> in(Object... cases) {
+        return this;
+    }
 
     @Override
     public When<T> and(Predicate<? super T> and) {
@@ -43,18 +56,6 @@ public class When<T> implements Predicate<T> {
         ++predicateIndex;
         return and(or);
     }
-
-//
-//    /**
-//     * @param then
-//     * @return
-//     */
-//    public When<T> then(Predicate<? super T> then) {
-//        getCurrentBranch().setThen(then::test);
-//        ++branchIndex;
-//        return this;
-//    }
-
 
     /**
      * @param then
@@ -79,10 +80,10 @@ public class When<T> implements Predicate<T> {
         return this;
     }
 
-    @Override
-    public When<T> negate() {
-        return new When<>(t -> !test(t));
-    }
+//    @Override
+//    public When<T> negate() {
+//        return new When<>(t -> !test(t));
+//    }
 
     @Override
     public boolean test(T t) {

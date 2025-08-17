@@ -23,7 +23,6 @@ public class Switch<T> implements Predicate<T> {
     }
 
     public Switch<T> cases(Object case1, Object... cases) {
-        // TODO 是否可以做到case和and、or共存
         casesList.add(case1);
         if (cases != null) {
             casesList.addAll(Arrays.asList(cases));
