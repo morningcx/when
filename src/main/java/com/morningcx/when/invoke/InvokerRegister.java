@@ -37,7 +37,7 @@ public class InvokerRegister {
                     Type[] actualTypeArguments = pt.getActualTypeArguments();
                     Type operationType = actualTypeArguments[0];
                     Type factType = actualTypeArguments[1];
-                    log.info("registering - {}<{}, {}>", invokerFactoryClass.getName(), operationType.getTypeName(), factType.getTypeName());
+                    log.info("registering InvokerFactory - {}<{}, {}>", invokerFactoryClass.getName(), operationType.getTypeName(), factType.getTypeName());
                     invokerFactoryMap.computeIfAbsent(operationType, k -> new HashMap<>())
                             .put(factType, new InvokerFactory() {
                                 @Override

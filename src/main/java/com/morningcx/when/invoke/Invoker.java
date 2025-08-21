@@ -25,4 +25,9 @@ public interface Invoker<F> {
      * @return
      */
     Object invoke(F fact, Object... args) throws Throwable;
+
+    default boolean isBatch() {
+        // todo 判断F是否是Collection
+        return false;
+    }
 }
