@@ -36,7 +36,7 @@ public class OperationDeserializer implements ObjectDeserializer {
         String type = jsonObject.getString("type");
         Class<? extends Operation> clazz = TYPE_MAP.get(type);
         if (clazz == null) {
-            throw new IllegalArgumentException("Unknown operation type: " + type);
+            throw new IllegalArgumentException("Unknown operation type: " + type + " in content: " + jsonObject.toJSONString());
         }
         return (T) jsonObject.toJavaObject(clazz);
     }
