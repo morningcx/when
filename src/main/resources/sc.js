@@ -57,8 +57,26 @@ function main() {
                         "name": "同一卡号近x天交易金额总和",
                         "udf": "5d7216en4160",
                         "key": {
-                            "type": "Field",
-                            "key": "card_no"
+                            "type": "StreamCubeFeature",
+                            "ns": "BANK",
+                            "dim": "客户号",
+                            "name": "客户号最近交易卡号",
+                            "key": {
+                                "type": "Field",
+                                "key": "cust_id"
+                            },
+                            "ref": {
+                                "type": "Field",
+                                "key": "time"
+                            },
+                            "dur": {
+                                "type": "Const",
+                                "value": "1y"
+                            },
+                            "current": {
+                                "type": "Const",
+                                "value": "current"
+                            }
                         },
                         "ref": {
                             "type": "Field",

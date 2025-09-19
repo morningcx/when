@@ -24,10 +24,14 @@ public class OperationUtils {
     }
 
     public static Operation parseOperationFromJs(String file) throws Throwable {
+        long t0 = System.currentTimeMillis();
         URL resource = JsUtils.class.getClassLoader().getResource(file);
         List<String> lines = FileUtil.readUtf8Lines(resource);
+        long t1 = System.currentTimeMillis();
         String result = JsUtils.invokeJs(String.join("\n", lines));
+        long t2 = System.currentTimeMillis();
         Operation operation = JSON.parseObject(result, Operation.class);
+        long t3 = System.currentTimeMillis();
         // todo 删除
         JSONObject resultJson = JSON.parseObject(result);
         JSONObject operationJson = JSON.parseObject(JSON.toJSONString(operation));
@@ -36,8 +40,10 @@ public class OperationUtils {
             log.info("file : [{}], compare json : {}", file, true);
         } else {
             log.error("file : [{}], compare json : {}", file, false);
-
         }
+        long t4 = System.currentTimeMillis();
+        log.info("parse operation file: [{}], took: [{}]ms, read: [{}]ms, invoke: [{}]ms, parse: [{}]ms, compare: [{}]ms",
+                file, t4 - t0, t1 - t0, t2 - t1, t3 - t2, t4 - t3);
         return operation;
     }
 

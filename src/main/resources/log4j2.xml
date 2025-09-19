@@ -12,6 +12,8 @@
         <property name="MAX_FILE_SIZE" value="100MB"/>
         <!-- 目录可以生成最大文件个数，默认为7 -->
         <Property name="MAX_LOG_FILE_COUNT">10000</Property>
+        <!--日志格式-->
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
     </Properties>
 
     <Appenders>
@@ -20,7 +22,7 @@
                 <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
                 <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %thread : %msg%n"/>
+            <PatternLayout pattern="${PATTERN}"/>
         </Console>
 
         <!-- error级别单独记录 -->
@@ -28,7 +30,7 @@
         <RollingFile name="errorAppender" fileName="${DIR}/${MODULE_NAME}-error.log"
                      filePattern="${DIR}/${MODULE_NAME}-error/${MODULE_NAME}-error-%d{yyyy-MM-dd}.%i.log.gz">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %thread : %msg%n</Pattern>
+                <Pattern>${PATTERN}</Pattern>
             </PatternLayout>
             <Policies>
                 <!-- 以day为单位自动回滚 -->
@@ -55,7 +57,7 @@
         <RollingFile name="warnAppender" fileName="${DIR}/${MODULE_NAME}-warn.log"
                      filePattern="${DIR}/${MODULE_NAME}-warn/${MODULE_NAME}-warn-%d{yyyy-MM-dd}.%i.log.gz">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-4level %logger{36} - %thread : %msg%n</Pattern>
+                <Pattern>${PATTERN}</Pattern>
             </PatternLayout>
             <Policies>
                 <!-- 以day为单位自动回滚 -->
@@ -80,7 +82,7 @@
         <RollingFile name="infoAppender" fileName="${DIR}/${MODULE_NAME}-info.log"
                      filePattern="${DIR}/${MODULE_NAME}-info/${MODULE_NAME}-%d{yyyy-MM-dd}.%i.log.gz">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-4level %logger{36} - %thread : %msg%n</Pattern>
+                <Pattern>${PATTERN}</Pattern>
             </PatternLayout>
             <Policies>
                 <!-- 以day为单位自动回滚 -->
