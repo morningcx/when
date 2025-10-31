@@ -70,7 +70,7 @@
 
         <!--info级别单独记录-->
         <RollingFile name="InfoAppender" fileName="${DIR}/${MODULE_NAME}info.log"
-                     filePattern="${DIR}/${MODULE_NAME}info/${MODULE_NAME}%d{yyyy-MM-dd}.%i.log.gz">
+                     filePattern="${DIR}/${MODULE_NAME}info/${MODULE_NAME}info-%d{yyyy-MM-dd}.%i.log.gz">
             <PatternLayout pattern="${PATTERN}"/>
             <Policies>
                 <!-- 以day为单位自动回滚 -->
