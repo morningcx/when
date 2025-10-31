@@ -1,5 +1,8 @@
 # when
 
+# 前提
+1. operation的type必须固定，不然同个operation的类，不同的type类型
+
 # TODO
 1. invoker可能单例也可能多例
 2. 同一个operation的不同属性，invoker可能都会定制，同时需要注意如何定位这个operation是这个invoker的
