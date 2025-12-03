@@ -2,7 +2,11 @@ package com.morningcx.when;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.morningcx.when.invoke.Invoker;
+import com.morningcx.when.invoke.InvokerRegister;
 import com.morningcx.when.oper.Operation;
+import com.morningcx.when.pojo.SuperRole;
+import com.morningcx.when.utils.CommonUtils;
 import com.morningcx.when.utils.OperationUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,9 +16,16 @@ import java.util.List;
 @Slf4j
 public class JsTest {
     public static void main(String[] args) throws Throwable {
-        Operation operation = OperationUtils.parseOperationFromJs("sc.js");
+        Operation operation = OperationUtils.parseOperationFromJs("flow.js");
         log.info(JSON.toJSONString(operation, SerializerFeature.PrettyFormat));
         depends(Collections.singletonList(operation), "$");
+
+        SuperRole superRole = CommonUtils.getSuperRole();
+
+        Invoker invoker = InvokerRegister.getInvoker(operation, superRole.getClass());
+        invoker.invoke(superRole);
+
+
     }
 
     private static void depends(List<Operation> operations, String path) throws Throwable {

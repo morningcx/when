@@ -56,8 +56,8 @@ public class InvokerRegister {
 
     public static Invoker getInvoker(Operation operation, Class<?> factType) {
         Map<Type, InvokerFactory> typeInvokerFactoryMap = invokerFactoryMap.get(operation.getClass());
+        Class<?> originFactType = factType;
         if (typeInvokerFactoryMap != null) {
-            Class<?> originFactType = factType;
             while (factType != null) {
                 InvokerFactory invokerFactory = typeInvokerFactoryMap.get(factType);
                 if (invokerFactory != null) {
@@ -72,6 +72,7 @@ public class InvokerRegister {
                 factType = factType.getSuperclass();
             }
         }
+        log.warn("no invokerFactory found for operation [{}] factType [{}]", operation.getType(), originFactType);
         return null;
     }
 
